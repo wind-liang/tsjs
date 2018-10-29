@@ -123,11 +123,11 @@ async function train() {
   });
 }
 
-let isPredicting = false;
+window.isPredicting = false;
 
 async function predict() {
   ui.isPredicting();
-  while (isPredicting) {
+  while (window.isPredicting) {
     const predictedClass = tf.tidy(() => {
       // Capture the frame from the webcam.
       const img = webcam.capture();
@@ -158,12 +158,12 @@ document.getElementById('train').addEventListener('click', async () => {
   ui.trainStatus('Training...');
   await tf.nextFrame();
   await tf.nextFrame();
-  isPredicting = false;
+  window.isPredicting = false;
   train();
 });
 document.getElementById('predict').addEventListener('click', () => {
   ui.startPacman();
-  isPredicting = true;
+  window.isPredicting = true;
   predict();
 });
 

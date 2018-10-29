@@ -41,15 +41,15 @@ export const getDenseUnits = () => +denseUnitsElement.value;
 const statusElement = document.getElementById('status');
 
 export function startPacman() {
-  //google.pacman.startGameplay(); 
-  alert("只有左右操作")
+  //google.pacman.startGameplay();
+  board.start();
 }
 
 export function predictClass(classId) {
  // google.pacman.keyPressed(CONTROL_CODES[classId]);
   board.move(CONTROL_CODES[classId])
   document.body.setAttribute('data-active', CONTROLS[classId]);
-  
+
 }
 
 export function isPredicting() {
