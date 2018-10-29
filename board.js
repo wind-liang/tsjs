@@ -21,7 +21,7 @@ var context = canvas.getContext('2d');
 //         console.log(pointer.x + ' ' + pointer.y);
 //     }
 // };
-var paddleW = 150;
+var paddleW = 200;
 var paddleX = 150;
 var paddleY = 250;
 var paddleSpeed = 10;
@@ -94,6 +94,12 @@ var drawALL = function () {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(paddle, paddleX, paddleY, paddleWidth, paddleHeight);
     context.drawImage(ball, ballX, ballY, ballWidth, ballWidth);
+    for (let i = 0; i < barrier.length; i++) {
+        if (barrier[i].isLive) {
+            context.drawImage(img, barrier[i].x , barrier[i].y
+                , barrierWidth, barrierHeight);
+        }
+    }
 };
 ball.src = 'https://tensorflow-pro.oss-cn-beijing.aliyuncs.com/ball.png';
 
@@ -158,8 +164,24 @@ var isOver = function () {
         clearInterval(window.board.timeout);
         alert('游戏结束！');
         init();
-
+        hasInit = true;
     }
+    let hasTrue = false;
+    for (let i = 0; i < barrier.length; i++) {
+        if (barrier[i].isLive) {
+            hasTrue = true;
+            break;
+        }
+    }
+    if (!hasTrue) {
+        window.isPredicting = false;
+        clearInterval(window.board.timeout);
+        alert('游戏胜利！');
+        nextLevel();
+        hasInit = true;
+    }
+
+
 };
 var runloop = function () {
     // events
@@ -170,10 +192,11 @@ var runloop = function () {
         ballX = 1;
     }
     ballY -= ballSpeedY;
-    console.log(ballX + ' ' +ballY)
-    console.log(ballSpeedX)
+    // console.log(ballX + ' ' +ballY)
+    // console.log(ballSpeedX)
     isBorder();
     ballToPaddle();
+    ballToBarrier();
     isOver();
     drawALL();
   //  }
@@ -188,18 +211,89 @@ var init = function () {
 
     paddleX = 150;
     paddleY = 250;
-    paddleSpeed = 10;
+    paddleSpeed = 15;
     paddleWidth = paddleW;
     paddleHeight = 25;
+
+    for (let i = 0; i < barrier.length; i++) {
+        barrier[i].isLive = true;
+    }
+};
+
+var nextLevel = function () {
+    ballSpeedX = 3;
+    ballSpeedY = 3;
+    ballX = 150;
+    ballY = 219;
+    ballWidth = 30;
+
+    paddleX = 150;
+    paddleY = 250;
+    paddleSpeed += 2;
+    paddleWidth -= 30;
+    paddleHeight -= 1;
+
+    for (let i = 0; i < barrier.length; i++) {
+        barrier[i].isLive = true;
+    }
 };
 // setTimeout(function () {
 //     runloop();
 // }, 1000 / fps);
+var hasInit = false;
 window.board.timeout;
 window.board.start = function () {
-    init();
+    if (!hasInit){
+         init();
+    }
+
    // isKeeping = true;
     window.board.timeout = setInterval(function () {
         runloop();
     }, 1000 / fps);
+};
+
+var sumLength = canvas.width;
+var barrierNum = 8;
+var barrierWidth = sumLength / barrierNum;
+var barrierHeight = 30;
+var barrierStartY = 60;
+var barrier = [];
+for (let j = 0; j < 2; j++) {
+    for (let i = 0; i < barrierNum; i++) {
+        var img = new Image();
+        img.src = 'https://tensorflow-pro.oss-cn-beijing.aliyuncs.com/barrier.jpg';
+        img.onload = function () {
+            context.drawImage(img, i * barrierWidth, barrierStartY + j * barrierHeight, barrierWidth, barrierHeight);
+        };
+        var b = {img: img, isLive: true, x: i * barrierWidth, y: barrierStartY + j * barrierHeight};
+        barrier.push(b);
+    }
+}
+var ballToBarrier = function () {
+    for (let i = 0; i < barrier.length; i++) {
+        if (barrier[i].isLive) {
+            var b = {};
+            b.x = ballX;
+            b.y = ballY;
+            b.width = ballWidth;
+            b.height = ballWidth;
+            var p = {};
+            p.x = barrier[i].x;
+            p.y = barrier[i].y;
+            p.width = barrierWidth;
+            p.height = paddleHeight;
+            if (intersect(b, p)) {
+                if (b.x < p.x + p.width * 1 / 4 && ballSpeedX > 0) {
+                    ballSpeedX *= -1;
+                }
+                if (b.x > p.x + p.width * 3 / 4 && ballSpeedX < 0) {
+                    ballSpeedX *= -1;
+                }
+                barrier[i].isLive = false;
+                ballSpeedY *= -1;
+            }
+        }
+
+    }
 };
