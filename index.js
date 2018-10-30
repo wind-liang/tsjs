@@ -70,6 +70,7 @@ ui.setExampleHandler(label => {
  */
 async function train() {
     if (controllerDataset.xs == null) {
+       // alert('请添加右边每个键位的照片');
         throw new Error('Add some examples before training!');
     }
 
@@ -167,6 +168,11 @@ async function predict() {
 }
 
 document.getElementById('train').addEventListener('click', async () => {
+    if (controllerDataset.xs == null) {
+        alert('请添加右边每个键位的照片，全部添加完毕再点击此键，等待 Loss 值固定不变后，点击开始游戏');
+        return;
+       // throw new Error('Add some examples before training!');
+    }
     ui.trainStatus('Training...');
     await tf.nextFrame();
     await tf.nextFrame();
@@ -174,6 +180,11 @@ document.getElementById('train').addEventListener('click', async () => {
     train();
 });
 document.getElementById('predict').addEventListener('click', () => {
+    if (controllerDataset.xs == null) {
+        alert('请先设定键位');
+        return;
+       // throw new Error('Add some examples before training!');
+    }
     ui.startPacman();
     window.isPredicting = true;
     predict();

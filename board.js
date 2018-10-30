@@ -1,4 +1,6 @@
 window.board = {};
+var level = 1;
+var pause = false;
 var canvas = document.getElementById('id-canvas');
 var context = canvas.getContext('2d');
 //
@@ -36,6 +38,7 @@ paddle.onload = function () {
 
 board.move = function (direction) {
 
+
     if (direction === 37) {
         board.left();
     }
@@ -43,10 +46,9 @@ board.move = function (direction) {
         board.right();
     }
 
-
-    // else if (direction === 38) {
-    //     drawALL();
-    // }
+    else if (direction === 38) {
+       pause = !pause;
+    }
     // else {
     //
     // }
@@ -80,6 +82,9 @@ window.addEventListener('keydown', function (event) {
     else if (event.key === 'd') {
         board.right();
     }
+    else if (event.key === 'p') {
+        pause = !pause;
+    }
 });
 
 // 球
@@ -100,6 +105,8 @@ var drawALL = function () {
                 , barrierWidth, barrierHeight);
         }
     }
+    var l = document.getElementById('level');
+    l.innerText = 'Level ' + level;
 };
 ball.src = 'https://tensorflow-pro.oss-cn-beijing.aliyuncs.com/ball.png';
 
@@ -176,7 +183,7 @@ var isOver = function () {
     if (!hasTrue) {
         window.isPredicting = false;
         clearInterval(window.board.timeout);
-        alert('游戏胜利！');
+        alert('游戏胜利！进入下一关');
         nextLevel();
         hasInit = true;
     }
@@ -187,22 +194,29 @@ var runloop = function () {
     // events
    // if (isKeeping) {
 
-    ballX += ballSpeedX;
-    if (ballX <= 0 && ballSpeedX > 0) {
-        ballX = 1;
+    if (!pause) {
+        ballX += ballSpeedX;
+        if (ballX <= 0 && ballSpeedX > 0) {
+            ballX = 1;
+        }
+        if (ballX >= 362 && ballSpeedX < 0) {
+            ballX = 360;
+        }
+        ballY -= ballSpeedY;
+        // console.log(ballX + ' ' +ballY)
+        // console.log(ballSpeedX)
+        isBorder();
+        ballToPaddle();
+        ballToBarrier();
+        isOver();
+        drawALL();
     }
-    ballY -= ballSpeedY;
-    // console.log(ballX + ' ' +ballY)
-    // console.log(ballSpeedX)
-    isBorder();
-    ballToPaddle();
-    ballToBarrier();
-    isOver();
-    drawALL();
+
   //  }
 };
 
 var init = function () {
+    level = 1;
     ballSpeedX = 3;
     ballSpeedY = 3;
     ballX = 150;
@@ -232,10 +246,15 @@ var nextLevel = function () {
     paddleSpeed += 2;
     paddleWidth -= 30;
     paddleHeight -= 1;
-
+    level += 1;
     for (let i = 0; i < barrier.length; i++) {
         barrier[i].isLive = true;
     }
+    if (paddleWidth <= 0) {
+        alert('恭喜通关！');
+        init();
+    }
+
 };
 // setTimeout(function () {
 //     runloop();
