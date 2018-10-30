@@ -1,10 +1,8 @@
-# TensorFlow.js Example: Transfer Learning to play Pacman via the Webcam
+# 打砖块
 
-This example shows you how to predict poses from a webcam using transfer
-learning.
+基于 TensorFlow.js ，在官方的例子 [吃豆人](https://storage.googleapis.com/tfjs-examples/webcam-transfer-learning/dist/index.html) 的基础上修改而成。
 
-In this example, we'll use a pretrained [MobileNet](https://github.com/tensorflow/tfjs-examples/tree/master/mobilenet) model and train another model
-using an internal mobilenet activation to predict 4 different classes from the
-webcam defined by the user.
+打砖块体验地址：
 
-[See this example live!](https://storage.googleapis.com/tfjs-examples/webcam-transfer-learning/dist/index.html)
+https://wind-liang.github.io/tfjsboard/
+
